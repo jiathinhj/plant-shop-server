@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model RefreshToken {
+  email        String @id
+  refreshToken String
+  iat          BigInt
+}
+
+model User {
+  userId         String     @unique @default(uuid())
+  email          String     @id
+  username       String
+  firstName      String
+  lastName       String
+  gender         String
+  hashedPassword String
+  phoneNumber    Int
+  picture        String
+  Cart           Cart[]
+  Favorite       Favorite[]
+  Order          Order[]
+}
+
+model Cart {
+  cartId       String       @id @default(uuid())
+  userId       String
+  user         User         @relation(fields: [userId], references: [userId])
+  cartDetailId String       @unique
+  totalPrice   Int
+  CartDetail   CartDetail[]
+}
+
+model CartDetail {
+  cartDetailId String
+  cart         Cart    @relation(fields: [cartDetailId], references: [cartDetailId])
+  productId    String
+  product      Product @relation(fields: [productId], references: [productId])
+  quantity     Int
+
+  @@unique([cartDetailId, productId])
+}
+
+model Favorite {
+  favoriteId String
+  userId     String
+  user       User   @relation(fields: [userId], references: [userId])
+  productId  String
+
+  @@unique([favoriteId, productId])
+}
+
+model Order {
+  orderId       String        @id
+  userId        String
+  user          User          @relation(fields: [userId], references: [userId])
+  orderDetailId String        @unique
+  totalPrice    Int
+  voucherId     String
+  voucher       Voucher       @relation(fields: [voucherId], references: [voucherId])
+  OrderDetail   OrderDetail[]
+}
+
+model OrderDetail {
+  orderDetailId String
+  order         Order  @relation(fields: [orderDetailId], references: [orderDetailId])
+  productId     String
+  quantity      Int
+
+  @@unique([orderDetailId, productId])
+}
+
+model Product {
+  productId  String       @id
+  name       String
+  price      Int
+  discount   Int
+  stock      Int
+  CartDetail CartDetail[]
+}
+
+model Voucher {
+  voucherId String   @id
+  code      String
+  title     String
+  detail    String
+  mbs       Int
+  discount  Int
+  quantity  Int
+  status    String   @default("active")
+  startTime DateTime
+  endTime   DateTime
+  Order     Order[]
+}
