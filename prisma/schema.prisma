@@ -10,6 +10,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model PendingAccount {
+  email          String @id
+  username       String
+  gender         Gender
+  phoneNumber    String
+  firstName      String
+  lastName       String
+  hashedPassword String
+}
+
 model RefreshToken {
   email        String @id
   refreshToken String
@@ -22,10 +32,11 @@ model User {
   username       String
   firstName      String
   lastName       String
-  gender         String
+  gender         Gender
   hashedPassword String
-  phoneNumber    Int
-  picture        String
+  pictureId      String
+  pictureUrl     String
+  phoneNumber    String
   Cart           Cart[]
   Favorite       Favorite[]
   Order          Order[]
@@ -100,4 +111,10 @@ model Voucher {
   startTime DateTime
   endTime   DateTime
   Order     Order[]
+}
+
+enum Gender {
+  male
+  female
+  not_defined
 }
